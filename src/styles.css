@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+}
+
+.vote-card-shadow {
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vote-btn-hover:hover {
+    box-shadow: 0px 12px 32px rgba(29, 78, 216, 0.12);
+    transform: translateY(-2px);
+}
+
+.vote-btn-active:active {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  min-height: max(884px, 100dvh);
+}
+
+.progress-bar-fill {
+    transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring effect */
+}
+.pulse-indicator {
+    animation: pulse-op 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse-op {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* --- Premium Animations --- */
+
+/* Mesh Gradient Animado */
+.mesh-bg {
+    background: radial-gradient(at 0% 0%, rgba(29, 78, 216, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 108, 73, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(29, 78, 216, 0.1) 0px, transparent 50%);
+    background-size: 200% 200%;
+    animation: mesh-movement 15s ease infinite alternate;
+}
+@keyframes mesh-movement {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 100%; }
+}
+
+/* Skeleton Shimmer */
+.skeleton-shimmer {
+    background: linear-gradient(90deg, 
+        rgba(203, 213, 225, 0.4) 25%, 
+        rgba(203, 213, 225, 0.8) 50%, 
+        rgba(203, 213, 225, 0.4) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Smooth State Transitions (Slide Up Fade) */
+.slide-up-fade {
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

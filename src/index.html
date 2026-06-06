@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AsambleaApp</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
+  <div id="global-error" style="color: red; padding: 20px; font-family: monospace; font-size: 16px; background: #fee; z-index: 9999; position: absolute; top:0; left:0; right:0; display:none;"></div>
+  <script>
+    window.addEventListener('error', function(e) {
+      var el = document.getElementById('global-error');
+      el.style.display = 'block';
+      el.innerHTML += '<br>' + e.message + ' at ' + e.filename + ':' + e.lineno + ':' + e.colno + '<br>' + (e.error ? e.error.stack : '');
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      var el = document.getElementById('global-error');
+      el.style.display = 'block';
+      el.innerHTML += '<br>Promise Rejection: ' + (e.reason ? e.reason.stack || e.reason : 'unknown');
+    });
+  </script>
+  <app-root></app-root>
+</body>
+</html>
