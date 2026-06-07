@@ -16,9 +16,6 @@ import { SupabaseService } from '../../core/services/supabase.service';
       <!-- LOBBY / LOGIN -->
       <div *ngIf="!tokenData()" class="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-lg p-8 mx-4">
         <div class="text-center mb-8">
-          <div class="w-20 h-20 bg-primary-fixed text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="material-symbols-outlined text-4xl">confirmation_number</span>
-          </div>
           <h1 class="text-2xl font-headline-md font-bold text-on-surface">Bienvenido</h1>
           <p class="text-on-surface-variant font-body-md mt-2">Ingresa tu código de acceso para participar</p>
         </div>
@@ -52,10 +49,7 @@ import { SupabaseService } from '../../core/services/supabase.service';
       </div>
 
       <!-- WAITING SCREEN -->
-      <div *ngIf="tokenData() && (!realtime.activeQuestion() || realtime.activeQuestion()?.estado !== 'activa')" class="flex-1 flex flex-col items-center justify-center p-4 text-center">
-        <div class="w-24 h-24 bg-primary-fixed text-primary rounded-full flex items-center justify-center mb-6 animate-pulse">
-           <span class="material-symbols-outlined text-5xl">hourglass_empty</span>
-        </div>
+      <div *ngIf="tokenData() && (!realtime.activeQuestion() || realtime.activeQuestion()?.estado !== 'activa')" class="flex-1 flex flex-col items-center justify-center p-4 text-center animate-fade-in">
         <h3 class="text-headline-lg font-bold text-on-surface">Esperando Pregunta</h3>
         <p class="text-body-lg text-on-surface-variant mt-4 max-w-md">La votación comenzará en breve.<br>Por favor, mantén esta pantalla abierta.</p>
         <button (click)="logout()" class="mt-8 text-primary font-label-md hover:underline">Cerrar Sesión</button>
@@ -63,9 +57,6 @@ import { SupabaseService } from '../../core/services/supabase.service';
 
       <!-- SUCCESS SCREEN (AFTER VOTING) -->
       <div *ngIf="tokenData() && realtime.activeQuestion()?.estado === 'activa' && hasVoted()" class="flex-1 flex flex-col items-center justify-center p-4 text-center animate-fade-in">
-        <div class="w-24 h-24 bg-primary text-white rounded-full flex items-center justify-center mb-6 shadow-md">
-           <span class="material-symbols-outlined text-5xl">how_to_vote</span>
-        </div>
         <h3 class="text-display-lg font-bold text-on-surface">¡Voto Enviado!</h3>
         <p class="text-body-lg text-on-surface-variant mt-4 max-w-md">Ya has realizado tu voto en esta pregunta.<br>Por favor, espera la siguiente.</p>
       </div>
