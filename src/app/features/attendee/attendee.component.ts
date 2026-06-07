@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
@@ -136,6 +136,24 @@ export class AttendeeComponent {
   hasVoted = signal(false);
   isVoting = signal(false);
   selectedOptionId = signal<string | null>(null);
+
+  constructor() {
+    // Escucha reactivamente los cambios en la pregunta activa
+    effect(() => {
+      const question = this.realtime.activeQuestion();
+      if (question && question.estado === 'activa') {
+        // Limpiamos selecciones
+        this.selectedOptionId.set(null);
+        // Asumimos temporalmente falso hasta verificar en la BD
+        this.hasVoted.set(false);
+        this.checkIfVoted(question.id);
+      } else {
+        // Si no hay pregunta o se cerró, limpiamos el estado
+        this.hasVoted.set(false);
+        this.selectedOptionId.set(null);
+      }
+    }, { allowSignalWrites: true });
+  }
 
   async login() {
     if (!this.accessCode.trim()) return;
