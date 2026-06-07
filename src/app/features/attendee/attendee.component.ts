@@ -45,7 +45,6 @@ import { SupabaseService } from '../../core/services/supabase.service';
             [disabled]="isLoading()"
             class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-label-md text-on-primary bg-primary hover:bg-primary-container focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors">
             {{ isLoading() ? 'Verificando...' : 'Entrar' }}
-            <span *ngIf="!isLoading()" class="material-symbols-outlined ml-2 text-[18px]">arrow_forward</span>
           </button>
         </form>
         
@@ -93,16 +92,8 @@ import { SupabaseService } from '../../core/services/supabase.service';
               (click)="selectOption(opcion.id)"
               [disabled]="isVoting()"
               [ngClass]="getButtonClass(i, opcion.id)"
-              class="vote-card-shadow group relative w-full min-h-[105px] rounded-[20px] p-4 flex items-center justify-between overflow-hidden border-2 focus:border-primary-fixed-dim outline-none transition-all hover:scale-[1.02] active:scale-95 duration-200">
-              
-              <div class="absolute inset-0 transition-opacity pointer-events-none" [ngClass]="getHoverOverlayClass(i, opcion.id)"></div>
-              
-              <div class="flex items-center gap-4 z-10">
-                <div [ngClass]="getIconBgClass(i, opcion.id)" class="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <span class="material-symbols-outlined text-3xl fill" [ngClass]="getIconTextClass(i, opcion.id)">{{ getIconName(i) }}</span>
-                </div>
-                <span class="font-headline-md text-[24px] md:text-headline-md" [ngClass]="getTextClass(i, opcion.id)">{{ opcion.texto_opcion }}</span>
-              </div>
+              class="w-full min-h-[80px] rounded-[15px] p-4 flex items-center justify-center border-2 outline-none transition-all duration-200">
+              <span class="font-headline-md text-[24px] md:text-headline-md font-bold" [ngClass]="getTextClass(i, opcion.id)">{{ opcion.texto_opcion }}</span>
             </button>
           </div>
 
@@ -112,7 +103,6 @@ import { SupabaseService } from '../../core/services/supabase.service';
               (click)="submitVote()"
               [disabled]="!selectedOptionId() || isVoting()"
               class="w-full bg-primary text-on-primary px-6 py-4 rounded-2xl font-headline-md text-[20px] font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary-container hover:text-on-primary-container shadow-lg transition-all active:scale-95 flex justify-center items-center gap-2">
-              <span *ngIf="isVoting()" class="material-symbols-outlined animate-spin">refresh</span>
               {{ isVoting() ? 'Enviando...' : 'Enviar Voto' }}
             </button>
           </div>
@@ -282,50 +272,29 @@ export class AttendeeComponent {
     let base = '';
     if (index === 0) base = 'bg-secondary border-transparent';
     else if (index === 1) base = 'bg-error border-transparent';
-    else base = 'bg-surface-container-lowest border-outline-variant hover:border-outline';
+    else base = 'bg-surface-variant border-transparent';
 
     if (voted) {
       if (isSelected) {
         return `${base} ring-4 ring-primary opacity-100`;
       } else {
-        return `${base} opacity-50 cursor-not-allowed`;
+        return `${base} opacity-30 cursor-not-allowed`;
       }
     }
 
     if (hasSelection) {
       if (isSelected) {
-        return `${base} ring-4 ring-on-surface scale-[1.02] opacity-100 shadow-xl`;
+        return `${base} ring-4 ring-primary opacity-100`;
       } else {
-        return `${base} opacity-40 grayscale scale-[0.98]`;
+        return `${base} opacity-30 grayscale`;
       }
     }
 
-    return `${base} vote-btn-hover vote-btn-active`;
-  }
-
-  getHoverOverlayClass(index: number, optionId: string): string {
-    if (index === 0 || index === 1) return 'bg-white/10 group-hover:opacity-100';
-    return 'bg-surface-variant/30 group-hover:opacity-100';
-  }
-
-  getIconBgClass(index: number, optionId: string): string {
-    if (index === 0 || index === 1) return 'bg-white/20';
-    return 'bg-surface-variant';
-  }
-
-  getIconTextClass(index: number, optionId: string): string {
-    if (index === 0 || index === 1) return 'text-white';
-    return 'text-on-surface-variant';
+    return base;
   }
 
   getTextClass(index: number, optionId: string): string {
     if (index === 0 || index === 1) return 'text-white';
     return 'text-on-surface';
-  }
-
-  getIconName(index: number): string {
-    if (index === 0) return 'thumb_up';
-    if (index === 1) return 'thumb_down';
-    return 'remove';
   }
 }
