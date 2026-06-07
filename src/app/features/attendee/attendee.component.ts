@@ -201,7 +201,13 @@ export class AttendeeComponent {
       }
 
     } catch (e: any) {
-      this.errorMsg.set(e.message || 'Error al validar el código');
+      console.error(e);
+      const errMsg = e.message || '';
+      if (errMsg.toLowerCase().includes('rate limit') || errMsg.toLowerCase().includes('ratelimit') || errMsg.toLowerCase().includes('limit reached')) {
+        this.errorMsg.set('Error de conexión');
+      } else {
+        this.errorMsg.set(e.message || 'Error al validar el código');
+      }
     } finally {
       this.isLoading.set(false);
     }
@@ -237,7 +243,12 @@ export class AttendeeComponent {
         this.hasVoted.set(true); // Ya había votado
         this.errorMsg.set('Ya has votado en esta pregunta.');
       } else {
-        this.errorMsg.set('Error al registrar el voto. Intenta de nuevo.');
+        const errMsg = e.message || '';
+        if (errMsg.toLowerCase().includes('rate limit') || errMsg.toLowerCase().includes('ratelimit') || errMsg.toLowerCase().includes('limit reached')) {
+          this.errorMsg.set('Error de conexión');
+        } else {
+          this.errorMsg.set('Error al registrar el voto. Intenta de nuevo.');
+        }
       }
     } finally {
       this.isVoting.set(false);
