@@ -340,7 +340,7 @@ export class AssemblyDetailComponent implements OnInit {
       this.loadAssemblyDetails();
       this.loadQuestions();
       this.countTokens();
-      this.realtime.subscribeToAssembly(this.assemblyId);
+      this.realtime.subscribeToAssembly(this.assemblyId, undefined, true);
     }
   }
 

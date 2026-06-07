@@ -146,7 +146,7 @@ export class DisplayComponent implements OnInit {
   loadAssembly(id: string) {
     if (!id.trim()) return;
     this.assemblyId.set(id.trim());
-    this.realtime.subscribeToAssembly(id.trim());
+    this.realtime.subscribeToAssembly(id.trim(), undefined, true);
     this.generateQR(id.trim());
   }
 

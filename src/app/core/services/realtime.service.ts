@@ -27,67 +27,79 @@ export class RealtimeService implements OnDestroy {
   public onlineTokens = signal<string[]>([]);
 
   // Escuchar a una asamblea en particular
-  subscribeToAssembly(assemblyId: string, tokenId?: string) {
+  // Escuchar a una asamblea en particular
+  subscribeToAssembly(assemblyId: string, tokenId?: string, isAdminOrDisplay = false) {
     this.unsubscribe(); // Limpiar previa suscripción
 
-    this.channel = this.supabase.channel(`assembly-${assemblyId}`)
-      // Escuchar cambios en la pregunta activa
+    let channel = this.supabase.channel(`assembly-${assemblyId}`)
+      // Escuchar cambios en la pregunta activa (Necesario para todos)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'survey_questions', filter: `assembly_id=eq.${assemblyId}` },
         (payload) => {
-          this.handleQuestionChange(payload);
+          this.handleQuestionChange(payload, isAdminOrDisplay);
         }
-      )
-      // Escuchar nuevos votos anónimos en vivo
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'votes' },
-        (payload) => {
-          this.handleNewVote(payload);
-        }
-      )
-      // Escuchar nuevos tokens (participantes) en vivo
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'tokens', filter: `assembly_id=eq.${assemblyId}` },
-        (payload) => {
-          this.totalParticipants.update(v => v + 1);
-        }
-      )
-      // Escuchar Presence (Usuarios conectados)
-      .on('presence', { event: 'sync' }, () => {
-        if (!this.channel) return;
-        const state = this.channel.presenceState();
-        const users = new Set<string>();
-        for (const id in state) {
-          state[id].forEach((pres: any) => {
-            if (pres.user_id) users.add(pres.user_id);
-          });
-        }
-        this.activeAttendees.set(users.size);
-        this.onlineTokens.set(Array.from(users));
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED' && tokenId && this.channel) {
-          await this.channel.track({ user_id: tokenId });
-        }
-      });
+      );
+
+    if (isAdminOrDisplay) {
+      channel = channel
+        // Escuchar nuevos votos anónimos en vivo (Solo Admin/Display)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'votes' },
+          (payload) => {
+            this.handleNewVote(payload);
+          }
+        )
+        // Escuchar nuevos tokens (participantes) en vivo (Solo Admin/Display)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'tokens', filter: `assembly_id=eq.${assemblyId}` },
+          (payload) => {
+            this.totalParticipants.update(v => v + 1);
+          }
+        )
+        // Escuchar Presence (Usuarios conectados - Solo Admin/Display)
+        .on('presence', { event: 'sync' }, () => {
+          if (!this.channel) return;
+          const state = this.channel.presenceState();
+          const users = new Set<string>();
+          for (const id in state) {
+            state[id].forEach((pres: any) => {
+              if (pres.user_id) users.add(pres.user_id);
+            });
+          }
+          this.activeAttendees.set(users.size);
+          this.onlineTokens.set(Array.from(users));
+        });
+    }
+
+    this.channel = channel;
+
+    this.channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED' && tokenId && this.channel) {
+        await this.channel.track({ user_id: tokenId });
+      }
+    });
       
     // Carga inicial
-    this.loadInitialData(assemblyId);
+    this.loadInitialData(assemblyId, isAdminOrDisplay);
   }
 
-  private async loadInitialData(assemblyId: string) {
-    // Buscar total de participantes iniciales
-    const { count: participantsCount } = await this.supabase
-      .from('tokens')
-      .select('*', { count: 'exact', head: true })
-      .eq('assembly_id', assemblyId);
-    
-    this.totalParticipants.set(participantsCount || 0);
+  private async loadInitialData(assemblyId: string, isAdminOrDisplay: boolean) {
+    if (isAdminOrDisplay) {
+      // Buscar total de participantes iniciales (Solo Admin/Display)
+      const { count: participantsCount } = await this.supabase
+        .from('tokens')
+        .select('*', { count: 'exact', head: true })
+        .eq('assembly_id', assemblyId);
+      
+      this.totalParticipants.set(participantsCount || 0);
+    } else {
+      this.totalParticipants.set(0);
+    }
 
-    // Buscar la última pregunta activa o cerrada
+    // Buscar la última pregunta activa o cerrada (Necesario para todos)
     const { data: qData } = await this.supabase
       .from('survey_questions')
       .select('*, survey_options(*)')
@@ -104,7 +116,12 @@ export class RealtimeService implements OnDestroy {
         opciones: qData.survey_options,
         estado: qData.estado
       });
-      await this.loadResults(qData.id);
+      if (isAdminOrDisplay) {
+        await this.loadResults(qData.id);
+      } else {
+        this.results.set([]);
+        this.totalVotes.set(0);
+      }
     } else {
       this.activeQuestion.set(null);
       this.results.set([]);
@@ -112,7 +129,7 @@ export class RealtimeService implements OnDestroy {
     }
   }
 
-  private async handleQuestionChange(payload: any) {
+  private async handleQuestionChange(payload: any, isAdminOrDisplay: boolean) {
     // Si la pregunta pasa a ser activa o cerrada, mostrarla/actualizarla
     if (payload.new && (payload.new.estado === 'activa' || payload.new.estado === 'cerrada')) {
       const { data: opts } = await this.supabase
@@ -126,7 +143,12 @@ export class RealtimeService implements OnDestroy {
         opciones: opts || [],
         estado: payload.new.estado
       });
-      await this.loadResults(payload.new.id);
+      if (isAdminOrDisplay) {
+        await this.loadResults(payload.new.id);
+      } else {
+        this.results.set([]);
+        this.totalVotes.set(0);
+      }
     } 
     // Si la pregunta se borra o vuelve a "creada" (por error), la quitamos si era la actual
     else if (payload.new && payload.new.estado === 'creada') {

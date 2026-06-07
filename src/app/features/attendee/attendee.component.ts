@@ -138,6 +138,22 @@ export class AttendeeComponent {
   selectedOptionId = signal<string | null>(null);
 
   constructor() {
+    // Intentar restaurar sesión persistente del asistente
+    const savedToken = localStorage.getItem('attendee_token');
+    if (savedToken) {
+      try {
+        const token = JSON.parse(savedToken);
+        this.tokenData.set(token);
+        this.realtime.subscribeToAssembly(token.assembly_id, token.id, false);
+        
+        // Verificar si hay una pregunta activa para comprobar si ya votó
+        this.checkIfActiveQuestionVoted(token);
+      } catch (e) {
+        console.error('Error al restaurar token de localStorage:', e);
+        localStorage.removeItem('attendee_token');
+      }
+    }
+
     // Escucha reactivamente los cambios en la pregunta activa
     effect(() => {
       const question = this.realtime.activeQuestion();
@@ -153,6 +169,23 @@ export class AttendeeComponent {
         this.selectedOptionId.set(null);
       }
     }, { allowSignalWrites: true });
+  }
+
+  private async checkIfActiveQuestionVoted(token: any) {
+    try {
+      const { data: qData } = await this.supabase.client
+        .from('survey_questions')
+        .select('id')
+        .eq('assembly_id', token.assembly_id)
+        .eq('estado', 'activa')
+        .single();
+
+      if (qData) {
+        this.checkIfVoted(qData.id);
+      }
+    } catch (e) {
+      // Ignorar si no hay pregunta activa o falla la consulta
+    }
   }
 
   async login() {
@@ -179,7 +212,8 @@ export class AttendeeComponent {
       }
 
       this.tokenData.set(token);
-      this.realtime.subscribeToAssembly(token.assembly_id, token.id);
+      localStorage.setItem('attendee_token', JSON.stringify(token));
+      this.realtime.subscribeToAssembly(token.assembly_id, token.id, false);
 
       if (qData) {
         this.checkIfVoted(qData.id);
@@ -195,6 +229,7 @@ export class AttendeeComponent {
   async logout() {
     await this.auth.signOut();
     this.tokenData.set(null);
+    localStorage.removeItem('attendee_token');
     this.realtime.unsubscribe();
   }
 
