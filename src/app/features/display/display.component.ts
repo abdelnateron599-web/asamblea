@@ -152,8 +152,8 @@ export class DisplayComponent implements OnInit {
 
   async generateQR(id: string) {
     try {
-      // Usamos el origin para asegurarnos que apunte a la misma red donde se abre el display
-      const url = `${window.location.origin}/`;
+      // Apuntar directamente a /attendee para evitar redirecciones intermedias que puedan fallar en móvil
+      const url = `${window.location.origin}/attendee`;
       const qrDataUrl = await QRCode.toDataURL(url, {
         width: 400,
         margin: 2,

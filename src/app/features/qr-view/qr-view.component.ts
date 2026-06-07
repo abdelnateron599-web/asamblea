@@ -44,7 +44,7 @@ export class QrViewComponent implements OnInit {
   }
 
   async generateQR() {
-    const url = window.location.origin + '/login?assembly=' + this.assemblyId;
+    const url = window.location.origin + '/attendee';
     try {
       this.qrDataUrl.set(await QRCode.toDataURL(url, {
         width: 500,

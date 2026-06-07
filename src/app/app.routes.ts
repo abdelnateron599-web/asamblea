@@ -40,5 +40,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/assembly-detail.component').then(m => m.AssemblyDetailComponent)
       }
     ]
+  },
+  {
+    path: '**',
+    redirectTo: 'attendee'
   }
 ];
