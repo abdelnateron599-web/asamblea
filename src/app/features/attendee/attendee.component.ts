@@ -33,7 +33,7 @@ import { SupabaseService } from '../../core/services/supabase.service';
               [(ngModel)]="accessCode"
               required 
               class="mt-1 block w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg focus:ring-primary focus:border-primary uppercase tracking-widest text-center text-xl text-on-surface"
-              placeholder="X X X">
+              placeholder="- - -">
           </div>
           
           <div *ngIf="errorMsg()" class="text-error text-sm text-center font-medium bg-error-container p-3 rounded-lg">
