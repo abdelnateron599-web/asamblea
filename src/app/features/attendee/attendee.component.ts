@@ -261,13 +261,13 @@ export class AttendeeComponent {
     const hasSelection = this.selectedOptionId() !== null;
 
     let base = '';
-    if (index === 0) base = 'bg-secondary border-transparent';
-    else if (index === 1) base = 'bg-error border-transparent';
-    else base = 'bg-surface-variant border-transparent';
+    if (index === 0) base = 'bg-blue-800 border-transparent';
+    else if (index === 1) base = 'bg-blue-600 border-transparent';
+    else base = 'bg-blue-200 border-transparent';
 
     if (voted) {
       if (isSelected) {
-        return `${base} ring-4 ring-primary opacity-100`;
+        return `${base} ring-4 ring-primary-container opacity-100`;
       } else {
         return `${base} opacity-30 cursor-not-allowed`;
       }
@@ -275,7 +275,7 @@ export class AttendeeComponent {
 
     if (hasSelection) {
       if (isSelected) {
-        return `${base} ring-4 ring-primary opacity-100`;
+        return `${base} ring-4 ring-primary-container opacity-100`;
       } else {
         return `${base} opacity-30 grayscale`;
       }
@@ -286,6 +286,6 @@ export class AttendeeComponent {
 
   getTextClass(index: number, optionId: string): string {
     if (index === 0 || index === 1) return 'text-white';
-    return 'text-on-surface';
+    return 'text-blue-900';
   }
 }
