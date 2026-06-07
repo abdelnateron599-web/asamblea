@@ -15,12 +15,12 @@ import { AuthService } from '../../core/services/auth.service';
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-section-gap gap-4">
         <div>
-          <h1 class="font-headline-lg text-headline-lg text-on-background mb-2">Encuestas Recientes</h1>
+          <h1 class="font-headline-lg text-headline-lg text-on-background mb-2">Asambleas Recientes</h1>
           <p class="font-body-md text-body-md text-on-surface-variant">Gestiona y monitorea tus sesiones de asamblea activas y pasadas.</p>
         </div>
         <button (click)="createNew()" class="bg-primary text-on-primary px-6 py-3 rounded-full font-label-md text-label-md font-bold flex items-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-lg hover:shadow-xl active:scale-95 duration-200">
           <span class="material-symbols-outlined">add</span>
-          Crear Encuesta
+          Crear Asamblea
         </button>
       </div>
 
@@ -31,7 +31,7 @@ import { AuthService } from '../../core/services/auth.service';
       <div *ngIf="!isLoading() && assemblies().length === 0" class="text-center py-20 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm">
         <span class="material-symbols-outlined text-6xl text-outline-variant mb-4">inbox</span>
         <h3 class="font-headline-md text-on-background mb-2">No hay asambleas</h3>
-        <p class="text-on-surface-variant mb-6">Comienza creando tu primera asamblea o encuesta.</p>
+        <p class="text-on-surface-variant mb-6">Comienza creando tu primera asamblea.</p>
         <button (click)="createNew()" class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md transition-colors hover:bg-primary-container">
           Crear Asamblea
         </button>
